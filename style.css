@@ -1,0 +1,15 @@
+@font-face {
+    font-family: "Rakkas"; 
+    src: url("Rakkas-Regular.ttf"); 
+    font-style: normal; 
+    font-weight: normal; 
+} 
+/* body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+} */
