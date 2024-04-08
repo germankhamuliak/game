@@ -55,7 +55,7 @@ function frame() {
 		myContext.font = '40px serif'
 		myContext.fillText('Ваш счет: ' + counter, myCanvas.width / 2, myCanvas.height / 2 + 50);
 		myContext.font = '50px serif'
-		myContext.fillText('Нажмите "пробел" попробовать ещё раз', myCanvas.width / 2, myCanvas.height / 2 + 150);
+		myContext.fillText('Нажмите "пробел", чтобы попробовать ещё раз', myCanvas.width / 2, myCanvas.height / 2 + 150);
 	} else {
 		if (toRight) {
 			leftPoint += level
