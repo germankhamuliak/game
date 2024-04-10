@@ -14,16 +14,17 @@ let bollHight = 50;
 let topPoint = Math.round(Math.random() * (canvas.height - bollHight));
 let leftPoint = Math.round(Math.random() * (canvas.width / 2 - bollWidth));
 let counter = 0;
-let level = 50 ;
+let level = 5;
 let toRight = true;
 let toBot = Math.round(Math.random());
 let rectWidth = 30
 let rectHight = 200
 let rectTop = canvas.height / 2 - rectHight / 2;
 let rectLeft = canvas.width - 130
-let newGame = false;
+let playGame = false;
 let mainMenu = true;
 let pause = false;
+let resalt = false;
 const menu = ["New Game" , "About Game" , "Records" , "Options" ]
 let menuPunct = 0;
 
@@ -42,7 +43,7 @@ function frame() {
 	context.drawImage(field,0, 0, canvas.width, canvas.height);
 	
 	requestAnimationFrame(frame);
-	if (!newGame){
+	if (!playGame && mainMenu){
 		context.drawImage(keeper, 50, 180, 400, 320);
 		context.drawImage(boll, canvas.width - 200, 100, 100, 100);
 		let height = 200
@@ -76,7 +77,7 @@ function frame() {
 		context.fill();
 		context.fillStyle = 'blue'; 
 		context.fillText('Pause', canvas.width / 2, canvas.height / 2);
-	} else if (newGame) {
+	} else if (playGame && !mainMenu) {
 		let rectRight = rectLeft + rectWidth
 		let rectBot = rectTop + rectHight
 		let bollLeft = leftPoint
@@ -98,6 +99,8 @@ function frame() {
 			context.fillText('Ваш счет: ' + counter, canvas.width / 2, canvas.height / 2 + 60);
 			context.fillText('Нажмите "Пробел", чтобы начать сначала', canvas.width / 2, canvas.height / 2 + 120);
 			context.fillText('"Esc" для выхода в главное меню', canvas.width / 2, canvas.height / 2 + 180);
+			mainMenu = false;
+			resalt = true;
 		} else {
 			if (toRight) {
 				leftPoint += level
@@ -175,13 +178,14 @@ frame();
 document.addEventListener('keydown', (event) => {
 	const key = event.key;
 	console.log(key);
+	console.log(key);
 	switch (key) {
 		case 'ArrowUp': 
 		if (mainMenu) {
 			if (menuPunct != 0) {
 				menuPunct--
 			}
-		} else if (!mainMenu && newGame ) {
+		} else if (!resalt && !mainMenu && playGame ) {
 			if (rectTop != 0) {
 				rectTop -= 10;
 				canvas.width = canvas.width;
@@ -190,11 +194,11 @@ document.addEventListener('keydown', (event) => {
 		}
 		break;
 		case 'ArrowDown':
-			if (mainMenu) {
+			if (mainMenu) { 
 				if (menuPunct != menu.length - 1) {
 					menuPunct++
 				}
-			} else if (!mainMenu && newGame && rectTop != canvas.height - rectHight) {
+			} else if (!resalt && !mainMenu && playGame && rectTop != canvas.height - rectHight) {
 				rectTop += 10;
 				canvas.width = canvas.width;
 				drowRct();
@@ -202,12 +206,12 @@ document.addEventListener('keydown', (event) => {
 			break;
 		
 		case 'Enter', ' ':
-			if (mainMenu && !newGame) {
+			if (mainMenu && !playGame) {
 				if(menu[menuPunct] == 'New Game') {
 					mainMenu = false;
-					newGame = true;
+					playGame = true;
 				}
-			} else if (!mainMenu && newGame) {
+			} else if (!mainMenu && playGame) {
 				topPoint = Math.round(Math.random() * (canvas.height - bollHight));
 				leftPoint = Math.round(Math.random() * (canvas.width / 2 - bollWidth));
 				toBot = Math.round(Math.random());
@@ -216,37 +220,54 @@ document.addEventListener('keydown', (event) => {
 				rectTop = canvas.height / 2 - rectHight / 2;
 				canvas.width = canvas.width;
 				drowRct();
+				resalt = false;
 			}
 			break;
 		case 'Escape':
-			if (!mainMenu && newGame) {   
+			if (!mainMenu && playGame && !pause && !resalt) {   
 				pause = true;
+			} else if(pause &&  playGame && !mainMenu && !resalt) {
+				canvas.width = canvas.width;
+				pause = false
+			} else if (!mainMenu && playGame && !pause && resalt){
+				mainMenu = true;
+				playGame = false;
+				resalt = false;
+				topPoint = Math.round(Math.random() * (canvas.height - bollHight));
+				leftPoint = Math.round(Math.random() * (canvas.width / 2 - bollWidth));
+				toBot = Math.round(Math.random());
+				counter = 0;
+				level = 5;
+				rectTop = canvas.height / 2 - rectHight / 2;
+				canvas.width = canvas.width;
+				drowRct();
+				resalt = false;
 			}
 			break;
 	}
 });
 
-// if (newGame && !mainMenu) {
+// if (playGame && !mainMenu) {
 // 	console.log(1);
 // 	document.addEventListener('keydown', (event) => {
 // 		const key = event.key;
 // 		switch (key) {
 // 			case 'ArrowUp': 
-// 				if (!newGame && rectTop != 0) {
+// 				if (!playGame && rectTop != 0) {
 // 					rectTop -= 10;
 // 					canvas.width = canvas.width;
 // 					drowRct();
 // 				}
 // 				break;
 // 			case 'ArrowDown':
-// 				if (!newGame && rectTop != canvas.height- rectHight) {
+// 				if (!playGame && rectTop != canvas.height- rectHight) {
 // 					rectTop += 10;
 // 					canvas.width = canvas.width;
 // 					drowRct();
 // 				}
 // 				break;
 // 			case ' ':
-// 				if (newGame) {
+// 				if (playGame) {
 // 					topPoint = Math.round(Math.random() * (canvas.height - bollHight));
 // 					leftPoint = Math.round(Math.random() * (canvas.width / 2 - bollWidth));
 // 					toBot = Math.round(Math.random());
@@ -255,7 +276,7 @@ document.addEventListener('keydown', (event) => {
 // 					rectTop = canvas.height / 2 - rectHight / 2;
 // 					canvas.width = canvas.width;
 // 					drowRct();
-// 					newGame = false;
+// 					playGame = false;
 // 				}
 // 				break;
 // 		}
