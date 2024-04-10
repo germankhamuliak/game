@@ -255,7 +255,7 @@ document.addEventListener('keydown', (event) => {
 			}
 			break;
 		
-		case 'Enter', ' ':
+		case 'Enter': case ' ':
 			if (mainMenu && !playGame) {
 				if(menu[menuPunct] == 'New Game') {
 					mainMenu = false;
