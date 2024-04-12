@@ -32,6 +32,8 @@ const field = new Image();
 field.src = 'field.png';
 const keeper = new Image();
 keeper.src = 'keeper.png';
+const arrows = new Image();
+arrows.src = 'arrows.png';
 
 
 /// boll ////
@@ -206,6 +208,7 @@ function frame() {
 		fon.play();
 		context.drawImage(keeper, 50, 180, 400, 320);
 		context.drawImage(boll, canvas.width - 200, 100, 100, 100);
+		context.drawImage(arrows, canvas.width - 150, canvas.height - 100, 120, 80);
 		let height = 200
 		for (menuNumber = 0; menuNumber < menu.length; menuNumber++) {
 			menuVariant = menu[menuNumber];
