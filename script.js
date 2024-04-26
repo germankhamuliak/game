@@ -93,12 +93,16 @@ let options = false;
 let records = false;
 let mouseX = 0;
 let mouseY = 0;
+let mousePosition;
+let newRecord = false;
+let looseText ="";
 
 ///menu ////
 
 const menu = ["New Game" , "About Game" , "Records" , "Options" ];
 const pauseMenu = ["Сontinue", "New Game" , "Options", "Main menu"];
 const optionsMenu = ["Music", "Effects"];
+const recordsList = [0,0,0,0,0];
 let menuPunct = 0;
 let menuNumber = 0;
 let menuVariant = "";
@@ -201,12 +205,17 @@ function game() {
 	}
 }
 function lose() {
+	if (counter >= recordsList[0]) {
+		looseText = 'Новый Рекорд: '
+	} else {
+		looseText = 'Ваш счет: '
+	}
 	context.fillStyle = 'blue';
 	context.font = '80px serif';
 	context.textAlign = 'center';
 	context.fillText('You Lose', canvas.width / 2, canvas.height /2 - 100);
 	context.font = '50px serif';
-	context.fillText('Ваш счет: ' + counter, canvas.width / 2, canvas.height / 2);
+	context.fillText(looseText + counter, canvas.width / 2, canvas.height / 2);
 	if (restart) {
 		context.fillStyle = 'yellow';
 	} else {
@@ -219,6 +228,10 @@ function lose() {
 	fon.pause();
 	fon.currentTime = 0;
 	esc();
+	isRecord();
+	if (newRecord) {
+		addRecord();
+	}
 }
 function levelUp() {
 	counter++;
@@ -234,10 +247,56 @@ function clearMenu() {
 function esc() {
 	context.drawImage(cross, 40, 40, 50, 50);
 }
-
+function addRecord() {
+	if (recordsList[0] < counter) {
+		recordsList[4] = recordsList[3]
+		recordsList[3] = recordsList[2]
+		recordsList[2] = recordsList[1]
+		recordsList[1] = recordsList[0]
+		recordsList[0] = counter;
+		newRecord = false;
+	} else if (recordsList[1] < counter) {
+		recordsList[4] = recordsList[3]
+		recordsList[3] = recordsList[2]
+		recordsList[2] = recordsList[1]
+		recordsList[1] = counter;
+		newRecord = false;
+	} else if (recordsList[2] < counter) {
+		recordsList[4] = recordsList[3]
+		recordsList[3] = recordsList[2]
+		recordsList[2] = counter;
+		newRecord = false;
+	} else if (recordsList[3] < counter) {
+		recordsList[4] = recordsList[3]
+		recordsList[3] = counter;
+		newRecord = false;
+	} else if (recordsList[4] < counter) {
+		recordsList[4] = counter;
+		newRecord = false;
+	}
+}
+function isRecord() {
+	let i = 0;
+	while (i < recordsList.length) {
+		if (recordsList[i] < counter) {
+			newRecord = true;
+			for (let i = 0; i < recordsList.length; i++) {
+				if (recordsList[i] == counter) {
+					newRecord = false;
+				}
+			}
+		}
+		i++;
+	}
+}
 function drowCursor(x, y) {
 	context.drawImage(cursor,x - 20, y - 5, 40, 60);
 }
+function mousePositionView() {
+	mouseX = mousePosition.x;
+	mouseY = mousePosition.y;
+}
+
 // игра ///
 function frame() {
 	context.drawImage(field,0, 0, canvas.width, canvas.height);
@@ -313,6 +372,20 @@ function frame() {
 				height += 50;
 			}
 		}
+	} else if (records) {
+		let height = 200;
+		for ( let record = 0; record < 5; record++) {
+			let recordNumbers = recordsList[record];
+			if (recordNumbers == 0) {
+				recordNumbers = "..."
+			}
+			context.fillStyle = 'blue';
+			context.font = '40px Rakkas, serif';
+			context.textAlign  = 'center';
+			context.fillText(recordNumbers, canvas.width / 2, height);
+			height += 50;
+		}
+		esc();
 	} else if (options) {
 		let height = 0;
 		for ( menuNumber = 0; menuNumber < optionsMenu.length; menuNumber++) {	
@@ -431,6 +504,10 @@ document.addEventListener('keydown', (event) => {
 					mainMenu = false;
 					options = true;
 					clearMenu();
+				} else if (menu[menuPunct] == 'Records') {
+					mainMenu = false;
+					records = true;
+					clearMenu();
 				}
 				menuAudio.play();
 			} else if (pause) {
@@ -498,9 +575,8 @@ function windowToCanvas(canvas, x, y) {
 }
 
 canvas.onmousemove = function (e) {
-    let mousePosition = windowToCanvas(canvas, e.clientX, e.clientY);
-	mouseX = mousePosition.x;
-	mouseY = mousePosition.y;
+	mousePosition = windowToCanvas(canvas, e.clientX, e.clientY);
+	mousePositionView()
 	if (mainMenu) {
 		if (mouseY < 210) {
 			menuPunct = 0;
@@ -543,7 +619,7 @@ canvas.onmousemove = function (e) {
 			menuPunct = 1;
 		}
 	}
-	if (options || about || resalt) {
+	if (options || about || resalt || records) {
 		if (mouseY > 50 && mouseY < 100 && mouseX > 50 && mouseX < 100) {
 			if (!crossHover) {
 				menuAudio.play();
@@ -555,11 +631,8 @@ canvas.onmousemove = function (e) {
 	}
 };
 
-canvas.onmousedown  = function (e) {
-	let mousePosition = windowToCanvas(canvas, e.clientX, e.clientY);
-	mouseX = mousePosition.x;
-	mouseY = mousePosition.y;
-	document.body.style.cursor = 'none';
+canvas.onmousedown  = function () {
+	mousePositionView()
 	if (mainMenu) {
 		if(menu[menuPunct] == 'New Game') {
 			mainMenu = false;
@@ -570,6 +643,10 @@ canvas.onmousedown  = function (e) {
 		} else if (menu[menuPunct] == 'Options') {
 			mainMenu = false;
 			options = true;
+			clearMenu();
+		} else if (menu[menuPunct] == 'Records') {
+			mainMenu = false;
+			records = true;
 			clearMenu();
 		}
 	} else if (pause) {
@@ -620,7 +697,7 @@ canvas.onmousedown  = function (e) {
 		menuAudio.play();
 	}
 	if (mouseY > 50 && mouseY < 100 && mouseX > 50 && mouseX < 100) {
-		if (options || about || resalt) {
+		if (options || about || resalt || records) {
 			clear();
 			mainMenu = true;
 			playGame = false;
